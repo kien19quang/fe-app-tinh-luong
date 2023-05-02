@@ -8,7 +8,11 @@ export interface ModalSubjectProps extends ModalProps {
 export default function ModalSubject({ form, ...props }: ModalSubjectProps) {
   return (
     <Modal {...props}>
-      <Form form={form} labelCol={{ span: 5 }} wrapperCol={{ span: 20 }} style={{ marginTop: 24 }}>
+      <Form form={form} labelCol={{ span: 6 }} wrapperCol={{ span: 20 }} style={{ marginTop: 24 }}>
+        <Form.Item label="Mã môn học" name="subjectCode" rules={[{ required: true, message: 'Vui lòng điền mã môn học!' }]}>
+          <Input />
+        </Form.Item>
+
         <Form.Item label="Tên môn học" name="name" rules={[{ required: true, message: 'Vui lòng điền tên môn học!' }]}>
           <Input />
         </Form.Item>

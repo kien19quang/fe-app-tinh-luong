@@ -1,7 +1,7 @@
 import ModalClass from '@/components/ModalClass/ModalClass';
 import MainLayout from '@/layouts/MainLayout/MainLayout';
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Row, Table, message } from 'antd';
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Form, Popconfirm, Row, Table, message } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import * as React from 'react';
 
@@ -13,19 +13,8 @@ interface DataType {
   numberStudents: number;
 }
 
-const columns: ColumnsType<DataType> = [
-  {
-    title: 'Tên lớp học',
-    dataIndex: 'name',
-  },
-  {
-    title: 'Số lượng sinh viên',
-    dataIndex: 'numberStudents',
-  },
-];
-
 const data: DataType[] = [];
-for (let i = 0; i < 20; i++) {
+for (let i = 0; i < 10; i++) {
   data.push({
     key: i,
     name: `A7${i}`,
@@ -35,21 +24,91 @@ for (let i = 0; i < 20; i++) {
 
 function Classes(props: ClassesProps) {
   const [showModal, setShowModal] = React.useState<boolean>(false);
+  const [dataSource, setDataSource] = React.useState<DataType[]>(data);
+  const [isEditRecord, setIsEditRecord] = React.useState<boolean>(false)
+  const [indexEdit, setIndexEdit] = React.useState<number>(0);
+  const [isLoadingTable, setIsLoadingTable] = React.useState<boolean>(false);
   const [form] = Form.useForm();
 
-  const handleShowModal = (value: boolean) => {
-    setShowModal(value);
-  };
+  const columns: ColumnsType<DataType> = [
+    {
+      title: 'Tên lớp học',
+      dataIndex: 'name',
+    },
+    {
+      title: 'Số lượng sinh viên',
+      dataIndex: 'numberStudents',
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      width: '112px',
+      render: (text, record, index) => {
+        return (
+          <Row style={{ gap: '10px' }}>
+            <Button
+              type="primary"
+              icon={<EditOutlined />}
+              style={{ boxShadow: 'none' }}
+              onClick={() => handleEditClass(record, index)}
+            />
+            <Popconfirm
+              placement="topRight"
+              title="Bạn có muốn xoá giáo viên này không?"
+              okText="Xoá giáo viên"
+              cancelText="Không"
+              onConfirm={() => handleDeleteClass(index)}
+              okButtonProps={{ style: { boxShadow: 'none' } }}
+            >
+              <Button type="primary" icon={<DeleteOutlined />} danger />
+            </Popconfirm>
+          </Row>
+        );
+      },
+    },
+  ];
 
   const handleConfirmModal = () => {
     form
       .validateFields()
       .then((values) => {
-        console.log(values);
+        let newDatasource = [...dataSource];
+        if (!isEditRecord) {
+          newDatasource = [values, ...dataSource];
+        } else {
+          newDatasource[indexEdit] = { ...values };
+        }
+        setDataSource(newDatasource);
+        setShowModal(false);
+        form.resetFields();
       })
       .catch((error) => {
         message.error('Vui lòng điền đầy đủ thông tin');
       });
+  };
+
+  const handleCancelModel = () => {
+    form.resetFields();
+    setShowModal(false);
+  };
+
+  const handleAddClass = () => {
+    setShowModal(true);
+    setIsEditRecord(false);
+  };
+
+  const handleEditClass = (record: DataType, index: number) => {
+    setShowModal(true);
+    setIsEditRecord(true);
+    setIndexEdit(index);
+    form.setFieldsValue(record);
+  };
+
+  const handleDeleteClass = (index: number): void => {
+    setIsLoadingTable(true);
+    const newDatasource = dataSource.filter((item, idx) => idx !== index && item);
+    setDataSource(newDatasource);
+    setIsLoadingTable(false);
   };
 
   return (
@@ -60,21 +119,21 @@ function Classes(props: ClassesProps) {
             type="primary"
             style={{ boxShadow: 'none', height: 34 }}
             icon={<PlusOutlined />}
-            onClick={() => handleShowModal(true)}
+            onClick={handleAddClass}
           >
             Thêm lớp học
           </Button>
         </Row>
   
-        <Table bordered columns={columns} dataSource={data} style={{ width: '100%' }} />
+        <Table bordered columns={columns} dataSource={dataSource} loading={isLoadingTable} style={{ width: '100%' }} />
       </Row>
       <ModalClass
-        title="Thêm lớp học"
+        title={!isEditRecord ? 'Thêm lớp học' : 'Thay đổi thông tin'}
         open={showModal}
-        onCancel={() => handleShowModal(false)}
+        onCancel={handleCancelModel}
         onOk={handleConfirmModal}
         okButtonProps={{ htmlType: 'submit' }}
-        okText="Thêm lớp học"
+        okText={!isEditRecord ? 'Thêm lớp học' : 'Chỉnh sửa'}
         cancelText="Huỷ"
         form={form}
         width={550}

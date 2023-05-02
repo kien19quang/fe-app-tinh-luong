@@ -1,23 +1,22 @@
-import { DatePicker, Form, FormInstance, Input, Modal, ModalProps, Select } from 'antd';
+import { DataTypeTeacher } from '@/pages';
+import { DatePicker, Form, FormInstance, Input, InputNumber, Modal, ModalProps, Select } from 'antd';
 import * as React from 'react';
 
 export interface ModalTeacherProps extends ModalProps {
   form: FormInstance<any>;
 }
 
-export default function ModalTeacher(props: ModalTeacherProps) {
-  const [form] = Form.useForm();
+export default function ModalTeacher({form, ...props}: ModalTeacherProps) {
 
   return (
     <Modal {...props}>
       <Form
-        form={props.form}
-        labelCol={{ span: 5 }}
+        form={form}
+        labelCol={{ span: 6 }}
         wrapperCol={{ span: 20 }}
         style={{ marginTop: 24 }}
-        initialValues={{ degree: 1.3 }}
       >
-        <Form.Item label="Họ và tên" name="fullName" rules={[{ required: true, message: 'Vui lòng điền họ và tên!' }]}>
+        <Form.Item label="Họ và tên" name="name" rules={[{ required: true, message: 'Vui lòng điền họ và tên!' }]}>
           <Input />
         </Form.Item>
 
@@ -41,13 +40,17 @@ export default function ModalTeacher(props: ModalTeacherProps) {
           <Select
             allowClear
             options={[
-              { label: 'Tốt nghiệp đại học', value: 1.3 },
-              { label: 'Thạc sĩ', value: 1.4 },
-              { label: 'Tiến sĩ', value: 1.5 },
-              { label: 'Phó giáo sư', value: 1.6 },
-              { label: 'Giáo sư', value: 1.7 },
+              { label: 'Tốt nghiệp đại học', value: 'Tốt nghiệp đại học' },
+              { label: 'Thạc sĩ', value: 'Thạc sĩ' },
+              { label: 'Tiến sĩ', value: 'Tiến sĩ' },
+              { label: 'Phó giáo sư', value: 'Phó giáo sư' },
+              { label: 'Giáo sư', value: 'Giáo sư' },
             ]}
           />
+        </Form.Item>
+
+        <Form.Item label="Tiền dạy chuẩn" name="standardTeachingFee" rules={[{ required: true, message: 'Vui lòng điền tiền dạy chuẩn theo giờ!' }]}>
+          <InputNumber style={{width: "100%"}} />
         </Form.Item>
       </Form>
     </Modal>
