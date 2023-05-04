@@ -40,7 +40,13 @@ function Salary(props: SalaryProps) {
     { title: 'Tên giáo viên', dataIndex: 'teacherName' },
     { title: 'Tên lớp học', dataIndex: 'className' },
     { title: 'Số tiết dạy', dataIndex: 'numberOfPeriods' },
-    { title: 'Tiền dạy chuẩn (Theo giờ)', dataIndex: 'standardTeachingFee' },
+    {
+      title: 'Tiền dạy chuẩn (Theo giờ)',
+      dataIndex: 'standardTeachingFee',
+      render: (money: number) => (
+        <NumericFormat value={money} displayType={'text'} thousandSeparator={true} suffix={' đ'} />
+      ),
+    },
     {
       title: 'Tiền lương',
       dataIndex: 'salary',
@@ -70,7 +76,13 @@ function Salary(props: SalaryProps) {
       <Row style={{ width: '100%', flexDirection: 'column' }}>
         <Table bordered columns={columns} dataSource={dataSource} style={{ width: '100%' }} />
       </Row>
-      <ModalSalary title="Bảng lương chi tiết" open={showModal} footer={null} width={700} onCancel={() => setShowModal(false)} />
+      <ModalSalary
+        title="Bảng lương chi tiết"
+        open={showModal}
+        footer={null}
+        width={700}
+        onCancel={() => setShowModal(false)}
+      />
     </>
   );
 }

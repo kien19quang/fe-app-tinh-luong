@@ -10,6 +10,7 @@ export interface ClassesProps {}
 interface DataType {
   key: React.Key;
   name: string;
+  nameSubject: string;
   numberStudents: number;
 }
 
@@ -18,6 +19,7 @@ for (let i = 0; i < 10; i++) {
   data.push({
     key: i,
     name: `A7${i}`,
+    nameSubject: 'Ngôn ngữ lập trình',
     numberStudents: 40,
   });
 }
@@ -25,7 +27,7 @@ for (let i = 0; i < 10; i++) {
 function Classes(props: ClassesProps) {
   const [showModal, setShowModal] = React.useState<boolean>(false);
   const [dataSource, setDataSource] = React.useState<DataType[]>(data);
-  const [isEditRecord, setIsEditRecord] = React.useState<boolean>(false)
+  const [isEditRecord, setIsEditRecord] = React.useState<boolean>(false);
   const [indexEdit, setIndexEdit] = React.useState<number>(0);
   const [isLoadingTable, setIsLoadingTable] = React.useState<boolean>(false);
   const [form] = Form.useForm();
@@ -34,6 +36,10 @@ function Classes(props: ClassesProps) {
     {
       title: 'Tên lớp học',
       dataIndex: 'name',
+    },
+    {
+      title: 'Tên môn học',
+      dataIndex: 'nameSubject',
     },
     {
       title: 'Số lượng sinh viên',
@@ -124,7 +130,7 @@ function Classes(props: ClassesProps) {
             Thêm lớp học
           </Button>
         </Row>
-  
+
         <Table bordered columns={columns} dataSource={dataSource} loading={isLoadingTable} style={{ width: '100%' }} />
       </Row>
       <ModalClass

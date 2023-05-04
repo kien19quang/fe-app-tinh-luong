@@ -9,6 +9,7 @@ import {
   BookOutlined,
   DollarCircleOutlined,
   HomeOutlined,
+  MoneyCollectOutlined,
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
@@ -44,6 +45,7 @@ const ListMenuItem: MenuProps['items'] = [
   getItem('Giáo viên', 'teachers', <TeamOutlined style={{ fontSize: 18 }} />, { fontSize: 16 }),
   getItem('Môn học', 'subjects', <BookOutlined style={{ fontSize: 18 }} />, { fontSize: 16 }),
   getItem('Lớp học', 'classes', <AuditOutlined style={{ fontSize: 18 }} />, { fontSize: 16 }),
+  getItem('Lương chuẩn', 'standardSalary', <MoneyCollectOutlined style={{ fontSize: 18 }} />, { fontSize: 16 }),
   getItem('Bảng lương', 'salary', <DollarCircleOutlined style={{ fontSize: 18 }} />, { fontSize: 16 }),
 ];
 
@@ -78,6 +80,9 @@ const MainLayout = ({ children }: LayoutProps): JSX.Element => {
     } else if (currentPathname.includes('/salary')) {
       res = ['salary'];
       newTitleSelect = 'Bảng lương';
+    } else if (currentPathname.includes('/standardSalary')) {
+      res = ['standardSalary'];
+      newTitleSelect = "Lương chuẩn (Theo giờ)";
     }
     setSelectedKeyMenu(res);
     setTitleSelect(newTitleSelect);
