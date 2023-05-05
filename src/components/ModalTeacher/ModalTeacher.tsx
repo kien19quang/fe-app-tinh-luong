@@ -6,16 +6,10 @@ export interface ModalTeacherProps extends ModalProps {
   form: FormInstance<any>;
 }
 
-export default function ModalTeacher({form, ...props}: ModalTeacherProps) {
-
+export default function ModalTeacher({ form, ...props }: ModalTeacherProps) {
   return (
     <Modal {...props}>
-      <Form
-        form={form}
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 20 }}
-        style={{ marginTop: 24 }}
-      >
+      <Form form={form} labelCol={{ span: 6 }} wrapperCol={{ span: 20 }} style={{ marginTop: 24 }}>
         <Form.Item label="Họ và tên" name="name" rules={[{ required: true, message: 'Vui lòng điền họ và tên!' }]}>
           <Input />
         </Form.Item>
@@ -49,8 +43,12 @@ export default function ModalTeacher({form, ...props}: ModalTeacherProps) {
           />
         </Form.Item>
 
-        <Form.Item label="Tiền dạy chuẩn" name="standardTeachingFee" rules={[{ required: true, message: 'Vui lòng điền tiền dạy chuẩn theo giờ!' }]}>
-          <InputNumber style={{width: "100%"}} />
+        <Form.Item
+          label="Tiền dạy chuẩn"
+          name="standardTeachingFee"
+          rules={[{ required: true, message: 'Vui lòng điền tiền dạy chuẩn theo giờ!' }]}
+        >
+          <InputNumber style={{ width: '100%' }} />
         </Form.Item>
       </Form>
     </Modal>

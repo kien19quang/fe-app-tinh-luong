@@ -7,6 +7,10 @@ import moment from 'moment';
 import { useState } from 'react';
 import { NumericFormat } from 'react-number-format';
 
+interface ClassAndPeriods {
+  class: string;
+  periods: number;
+}
 export interface DataTypeTeacher {
   key: React.Key;
   teacherCode: string;
@@ -16,6 +20,7 @@ export interface DataTypeTeacher {
   cmnd: string;
   degree: string;
   standardTeachingFee: number;
+  listClassAndPeriods: ClassAndPeriods[];
 }
 
 const data: DataTypeTeacher[] = [];
@@ -29,6 +34,11 @@ for (let i = 0; i < 10; i++) {
     cmnd: '0000',
     degree: 'Tiến sĩ',
     standardTeachingFee: 100000,
+    listClassAndPeriods: [
+      { class: 'A707', periods: 10 },
+      { class: 'B707', periods: 8 },
+      { class: 'A605', periods: 12 },
+    ],
   });
 }
 
@@ -41,16 +51,26 @@ function Home() {
   const [form] = Form.useForm();
 
   const columns: ColumnsType<DataTypeTeacher> = [
-    { title: 'Mã giáo viên', dataIndex: 'teacherCode' },
-    { title: 'Họ và tên', dataIndex: 'name' },
+    { title: 'Mã giáo viên', dataIndex: 'teacherCode', fixed: 'left' },
+    { title: 'Họ và tên', dataIndex: 'name', fixed: 'left' },
     { title: 'Địa chỉ', dataIndex: 'address' },
     {
       title: 'Ngày sinh',
       dataIndex: 'dateOfBirth',
       render: (date: moment.Moment) => moment(date).format('DD-MM-YYYY'),
+      width: '150px',
     },
-    { title: 'CMND', dataIndex: 'cmnd' },
-    { title: 'Bằng cấp', dataIndex: 'degree' },
+    { title: 'CMND', dataIndex: 'cmnd', width: '150px' },
+    { title: 'Bằng cấp', dataIndex: 'degree', width: '150px' },
+    {
+      title: 'Tên lớp - Số tiết',
+      dataIndex: 'listClassAndPeriods',
+      width: '300px',
+      render: (listClassAndPeriods: ClassAndPeriods[]) =>
+        listClassAndPeriods?.map(
+          (item, index) => `${item.class} - ${item.periods}${index !== listClassAndPeriods.length - 1 ? ',' : ''} `,
+        ),
+    },
     {
       title: 'Tiền dạy chuẩn(Theo giờ)',
       dataIndex: 'standardTeachingFee',
@@ -62,6 +82,7 @@ function Home() {
       title: 'Action',
       key: 'action',
       width: '112px',
+      fixed: 'right',
       render: (text, record, index) => {
         return (
           <Row style={{ gap: '10px' }}>
@@ -91,14 +112,13 @@ function Home() {
     form
       .validateFields()
       .then((values) => {
-        let newDatasource = [...dataSource]
-        const messageNoti = isEditTeacher ? "Chỉnh sửa thông tin thành công" : "Thêm mới giáo viên thành công"
+        let newDatasource = [...dataSource];
+        const messageNoti = isEditTeacher ? 'Chỉnh sửa thông tin thành công' : 'Thêm mới giáo viên thành công';
         values = { ...values, teacherCode: 'A43271' };
         if (!isEditTeacher) {
           newDatasource = [values, ...dataSource];
-        }
-        else {
-          newDatasource[indexEdit] = {...values};
+        } else {
+          newDatasource[indexEdit] = { ...values };
         }
         setDataSource(newDatasource);
         setShowModal(false);
@@ -148,7 +168,14 @@ function Home() {
           </Button>
         </Row>
 
-        <Table bordered columns={columns} dataSource={dataSource} style={{ width: '100%' }} loading={isLoadingTable} />
+        <Table
+          bordered
+          columns={columns}
+          dataSource={dataSource}
+          style={{ width: '100%' }}
+          loading={isLoadingTable}
+          scroll={{ x: 1700 }}
+        />
       </Row>
       <ModalTeacher
         title={!isEditTeacher ? 'Thêm giáo viên' : 'Thay đổi thông tin'}

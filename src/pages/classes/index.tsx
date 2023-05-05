@@ -10,8 +10,10 @@ export interface ClassesProps {}
 interface DataType {
   key: React.Key;
   name: string;
-  nameSubject: string;
+  subjectCode: string;
   numberStudents: number;
+  teacherCode: string;
+  periods: number;
 }
 
 const data: DataType[] = [];
@@ -19,10 +21,22 @@ for (let i = 0; i < 10; i++) {
   data.push({
     key: i,
     name: `A7${i}`,
-    nameSubject: 'Ngôn ngữ lập trình',
+    subjectCode: '0',
     numberStudents: 40,
+    teacherCode: "A43465",
+    periods: 10
   });
 }
+
+const demoSubject = [
+  { subjectCode: '0', nameSubject: 'Ngôn ngữ lập trình' },
+  { subjectCode: '1', nameSubject: 'Lập trình hướng đối tượng' },
+];
+
+const demoTeacher = [
+  { teacherCode: "A43465", nameTeacher: "Vũ Quang Kiên" },
+  { teacherCode: "A43271", nameTeacher: "Nguyễn Thị Minh Anh" },
+]
 
 function Classes(props: ClassesProps) {
   const [showModal, setShowModal] = React.useState<boolean>(false);
@@ -39,7 +53,17 @@ function Classes(props: ClassesProps) {
     },
     {
       title: 'Tên môn học',
-      dataIndex: 'nameSubject',
+      dataIndex: 'subjectCode',
+      render: (value: string) => demoSubject?.find(item => item.subjectCode === value)?.nameSubject
+    },
+    {
+      title: "Giáo viên phụ trách",
+      dataIndex: "teacherCode",
+      render: (value: string) => demoTeacher?.find(item => item.teacherCode === value)?.nameTeacher
+    },
+    {
+      title: "Số tiết",
+      dataIndex: "periods"
     },
     {
       title: 'Số lượng sinh viên',
