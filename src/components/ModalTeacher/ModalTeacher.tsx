@@ -10,6 +10,7 @@ export default function ModalTeacher({ form, ...props }: ModalTeacherProps) {
   return (
     <Modal {...props}>
       <Form form={form} labelCol={{ span: 6 }} wrapperCol={{ span: 20 }} style={{ marginTop: 24 }}>
+        <Form.Item label="Mã giáo viên" name="_id" hidden />
         <Form.Item label="Họ và tên" name="name" rules={[{ required: true, message: 'Vui lòng điền họ và tên!' }]}>
           <Input />
         </Form.Item>
@@ -19,11 +20,29 @@ export default function ModalTeacher({ form, ...props }: ModalTeacherProps) {
         </Form.Item>
 
         <Form.Item
-          label="Ngày sinh"
-          name="dateOfBirth"
-          rules={[{ required: true, message: 'Vui lòng chọn ngày sinh!' }]}
+          label="Số điện thoại"
+          name="phoneNumber"
+          rules={[{ required: true, message: 'Vui lòng điền số điện thoại!' }]}
         >
-          <DatePicker allowClear style={{ width: '100%' }} />
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="Email"
+          name="email"
+          rules={[
+            { required: true, message: 'Vui lòng điền email!' },
+            {
+              type: 'email',
+              message: 'Bạn chưa nhập đúng định dạng email!',
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item label="Ngày sinh" name="dob" rules={[{ required: true, message: 'Vui lòng chọn ngày sinh!' }]}>
+          <DatePicker allowClear style={{ width: '100%' }} format="DD-MM-YYYY" />
         </Form.Item>
 
         <Form.Item label="CMND" name="cmnd" rules={[{ required: true, message: 'Vui lòng điền CMND!' }]}>
@@ -34,21 +53,13 @@ export default function ModalTeacher({ form, ...props }: ModalTeacherProps) {
           <Select
             allowClear
             options={[
-              { label: 'Tốt nghiệp đại học', value: 'Tốt nghiệp đại học' },
-              { label: 'Thạc sĩ', value: 'Thạc sĩ' },
-              { label: 'Tiến sĩ', value: 'Tiến sĩ' },
-              { label: 'Phó giáo sư', value: 'Phó giáo sư' },
-              { label: 'Giáo sư', value: 'Giáo sư' },
+              { label: 'Tốt nghiệp đại học', value: 'graduate' },
+              { label: 'Thạc sĩ', value: 'master' },
+              { label: 'Tiến sĩ', value: 'docter' },
+              { label: 'Phó giáo sư', value: 'associateProfessor' },
+              { label: 'Giáo sư', value: 'professor' },
             ]}
           />
-        </Form.Item>
-
-        <Form.Item
-          label="Tiền dạy chuẩn"
-          name="standardTeachingFee"
-          rules={[{ required: true, message: 'Vui lòng điền tiền dạy chuẩn theo giờ!' }]}
-        >
-          <InputNumber style={{ width: '100%' }} />
         </Form.Item>
       </Form>
     </Modal>

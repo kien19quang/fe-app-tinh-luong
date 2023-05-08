@@ -1,4 +1,5 @@
 import MainLayout from '@/layouts/MainLayout/MainLayout';
+import { createStandardSalary, getStandardSalary } from '@/services/salaryService';
 import { EditOutlined } from '@ant-design/icons';
 import { Button, Form, InputNumber, Modal, Row, Table, message } from 'antd';
 import { ColumnsType } from 'antd/es/table';
@@ -11,7 +12,7 @@ export interface StandardSalaryProps {}
 interface DataType {
   key: React.Key;
   standardSalary: number;
-  updatedAt: moment.Moment;
+  updatedAt: Date;
 }
 
 const columns: ColumnsType<DataType> = [
@@ -25,25 +26,40 @@ const columns: ColumnsType<DataType> = [
   {
     title: 'Ngày thay đổi',
     dataIndex: 'updatedAt',
-    render: (date: moment.Moment) => moment(date).format('DD-MM-YYYY'),
+    render: (date: Date) => moment(date).format('DD-MM-YYYY'),
   },
 ];
 
 function StandardSalary(props: StandardSalaryProps) {
-  const [dataSource, setDataSource] = React.useState<DataType[]>([
-    { key: 'standardSalary', standardSalary: 100000, updatedAt: moment() },
-  ]);
+  const [dataSource, setDataSource] = React.useState<DataType[]>([]);
   const [showModal, setShowModal] = React.useState<boolean>(false);
   const [isLoadingTable, setIsLoadingTable] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    const getStandardTeacherSalary = async () => {
+      const response = await getStandardSalary();
+      if (response.success) {
+        setDataSource([response.data]);
+      }
+    };
+
+    getStandardTeacherSalary();
+  }, []);
 
   const handleConfirmModal = () => {
     form
       .validateFields()
-      .then((values) => {
-        values = { ...values, updatedAt: moment() };
-        setDataSource([values]);
-        setShowModal(false);
-        form.resetFields();
+      .then(async (values) => {
+        console.log(values);
+        const response = await createStandardSalary(values.standardSalary);
+        if (response.success) {
+          setDataSource([response.data]);
+          message.success('Thay đổi mức lương chuẩn theo giờ thành công');
+          setShowModal(false);
+          form.resetFields();
+        } else {
+          message.error('Không thể thay đổi mức lương!');
+        }
       })
       .catch((e) => {
         console.log(e);

@@ -1,5 +1,8 @@
 import ModalClass from '@/components/ModalClass/ModalClass';
 import MainLayout from '@/layouts/MainLayout/MainLayout';
+import { SubjectDto } from '@/models/subjectModel';
+import { TeacherDto } from '@/models/teachersModel';
+import { createClass, deleteClass, getAllClass, updateClass } from '@/services/classService';
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Popconfirm, Row, Table, message } from 'antd';
 import { ColumnsType } from 'antd/es/table';
@@ -9,42 +12,34 @@ export interface ClassesProps {}
 
 interface DataType {
   key: React.Key;
+  _id: string;
   name: string;
-  subjectCode: string;
-  numberStudents: number;
-  teacherCode: string;
-  periods: number;
+  Teacher: TeacherDto;
+  Subject: SubjectDto
+  studentNumber: number;
+  lession: number;
 }
 
-const data: DataType[] = [];
-for (let i = 0; i < 10; i++) {
-  data.push({
-    key: i,
-    name: `A7${i}`,
-    subjectCode: '0',
-    numberStudents: 40,
-    teacherCode: "A43465",
-    periods: 10
-  });
-}
-
-const demoSubject = [
-  { subjectCode: '0', nameSubject: 'Ngôn ngữ lập trình' },
-  { subjectCode: '1', nameSubject: 'Lập trình hướng đối tượng' },
-];
-
-const demoTeacher = [
-  { teacherCode: "A43465", nameTeacher: "Vũ Quang Kiên" },
-  { teacherCode: "A43271", nameTeacher: "Nguyễn Thị Minh Anh" },
-]
 
 function Classes(props: ClassesProps) {
   const [showModal, setShowModal] = React.useState<boolean>(false);
-  const [dataSource, setDataSource] = React.useState<DataType[]>(data);
+  const [dataSource, setDataSource] = React.useState<DataType[]>([]);
   const [isEditRecord, setIsEditRecord] = React.useState<boolean>(false);
-  const [indexEdit, setIndexEdit] = React.useState<number>(0);
   const [isLoadingTable, setIsLoadingTable] = React.useState<boolean>(false);
   const [form] = Form.useForm();
+  
+  React.useEffect(() => {
+    const getClass = async () => {
+      setIsLoadingTable(true);
+      const response = await getAllClass();
+      if (response.success) {
+        setDataSource(response.data);
+      }
+      setIsLoadingTable(false);
+    }
+
+    getClass();
+  }, [])
 
   const columns: ColumnsType<DataType> = [
     {
@@ -53,21 +48,21 @@ function Classes(props: ClassesProps) {
     },
     {
       title: 'Tên môn học',
-      dataIndex: 'subjectCode',
-      render: (value: string) => demoSubject?.find(item => item.subjectCode === value)?.nameSubject
+      dataIndex: 'Subject',
+      render: (subject: SubjectDto) => subject ? subject.name : ''
     },
     {
       title: "Giáo viên phụ trách",
-      dataIndex: "teacherCode",
-      render: (value: string) => demoTeacher?.find(item => item.teacherCode === value)?.nameTeacher
+      dataIndex: "Teacher",
+      render: (teacher: TeacherDto) => teacher ? teacher.name : ''
     },
     {
       title: "Số tiết",
-      dataIndex: "periods"
+      dataIndex: "lession"
     },
     {
       title: 'Số lượng sinh viên',
-      dataIndex: 'numberStudents',
+      dataIndex: 'studentNumber',
     },
     {
       title: 'Action',
@@ -84,10 +79,10 @@ function Classes(props: ClassesProps) {
             />
             <Popconfirm
               placement="topRight"
-              title="Bạn có muốn xoá giáo viên này không?"
-              okText="Xoá giáo viên"
+              title="Bạn có muốn xoá lớp học này không?"
+              okText="Xoá lớp học"
               cancelText="Không"
-              onConfirm={() => handleDeleteClass(index)}
+              onConfirm={() => handleDeleteClass(record._id, index)}
               okButtonProps={{ style: { boxShadow: 'none' } }}
             >
               <Button type="primary" icon={<DeleteOutlined />} danger />
@@ -101,18 +96,34 @@ function Classes(props: ClassesProps) {
   const handleConfirmModal = () => {
     form
       .validateFields()
-      .then((values) => {
+      .then(async (values) => {
         let newDatasource = [...dataSource];
+        const messageNoti = isEditRecord ? 'Chỉnh sửa thông tin thành công' : 'Thêm mới lớp học thành công';
         if (!isEditRecord) {
-          newDatasource = [values, ...dataSource];
+          const response = await createClass(values);
+          if (response.success) {
+            newDatasource = [...dataSource, response.data];
+          }
+          else {
+            message.error('Không thể tạo mới lớp học!')
+          }
         } else {
-          newDatasource[indexEdit] = { ...values };
+          const response = await updateClass(values)
+          if (response.success) {
+            const indexEdit = newDatasource.findIndex((item) => item._id === values._id);
+            newDatasource[indexEdit] = { ...response.data };
+          }
+          else {
+            message.error('Không thể chỉnh sửa lớp học!')
+          }
         }
         setDataSource(newDatasource);
         setShowModal(false);
+        message.success(messageNoti)
         form.resetFields();
       })
       .catch((error) => {
+        console.log(error)
         message.error('Vui lòng điền đầy đủ thông tin');
       });
   };
@@ -130,14 +141,16 @@ function Classes(props: ClassesProps) {
   const handleEditClass = (record: DataType, index: number) => {
     setShowModal(true);
     setIsEditRecord(true);
-    setIndexEdit(index);
     form.setFieldsValue(record);
   };
 
-  const handleDeleteClass = (index: number): void => {
+  const handleDeleteClass = async (id: string, index: number): Promise<void> => {
     setIsLoadingTable(true);
-    const newDatasource = dataSource.filter((item, idx) => idx !== index && item);
-    setDataSource(newDatasource);
+    const response = await deleteClass(id)
+    if (response.success) {
+      const newDatasource = dataSource.filter((item, idx) => idx !== index && item);
+      setDataSource(newDatasource);
+    }
     setIsLoadingTable(false);
   };
 

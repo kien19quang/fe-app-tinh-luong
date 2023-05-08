@@ -1,5 +1,7 @@
 import ModalSubject from '@/components/ModalSubject/ModalSubject';
 import MainLayout from '@/layouts/MainLayout/MainLayout';
+import { RulesLevelOfDifficultSubject } from '@/models/subjectModel';
+import { createSubject, deleteSubject, getAllSubject, updateSubject } from '@/services/subjectService';
 import { DeleteOutlined, EditOutlined, PlusOutlined, UserAddOutlined } from '@ant-design/icons';
 import { Button, Form, Popconfirm, Row, Table, message } from 'antd';
 import { ColumnsType } from 'antd/es/table';
@@ -8,34 +10,40 @@ import * as React from 'react';
 export interface SubjectsProps {}
 
 interface DataType {
-  key: React.Key;
+  _id: string;
   subjectCode: string;
   name: string;
   levelOfDifficult: number;
 }
 
-const data: DataType[] = [];
-for (let i = 0; i < 10; i++) {
-  data.push({
-    key: i,
-    subjectCode: `${i}`,
-    name: `Toán ${i}`,
-    levelOfDifficult: 1.3,
-  });
-}
-
 function Subjects(props: SubjectsProps) {
   const [showModal, setShowModal] = React.useState<boolean>(false);
-  const [dataSource, setDataSource] = React.useState<DataType[]>(data);
+  const [dataSource, setDataSource] = React.useState<DataType[]>([]);
   const [isEditRecord, setIsEditRecord] = React.useState<boolean>(false);
-  const [indexEdit, setIndexEdit] = React.useState<number>(0);
   const [isLoadingTable, setIsLoadingTable] = React.useState<boolean>(false);
   const [form] = Form.useForm();
+
+  React.useEffect(() => {
+    const getSubject = async () => {
+      setIsLoadingTable(true);
+      const response = await getAllSubject();
+      if (response.success) {
+        setDataSource(response.data);
+      }
+      setIsLoadingTable(false);
+    };
+
+    getSubject();
+  });
 
   const columns: ColumnsType<DataType> = [
     { title: 'Mã môn học', dataIndex: 'subjectCode' },
     { title: 'Tên môn học', dataIndex: 'name' },
-    { title: 'Độ khó', dataIndex: 'levelOfDifficult' },
+    {
+      title: 'Độ khó',
+      dataIndex: 'levelOfDifficult',
+      render: (type: keyof typeof RulesLevelOfDifficultSubject) => RulesLevelOfDifficultSubject[type],
+    },
     {
       title: 'Action',
       key: 'action',
@@ -51,10 +59,10 @@ function Subjects(props: SubjectsProps) {
             />
             <Popconfirm
               placement="topRight"
-              title="Bạn có muốn xoá giáo viên này không?"
-              okText="Xoá giáo viên"
+              title="Bạn có muốn xoá môn học này không?"
+              okText="Xoá môn học"
               cancelText="Không"
-              onConfirm={() => handleDeleteSubject(index)}
+              onConfirm={() => handleDeleteSubject(record._id, index)}
               okButtonProps={{ style: { boxShadow: 'none' } }}
             >
               <Button type="primary" icon={<DeleteOutlined />} danger />
@@ -68,18 +76,33 @@ function Subjects(props: SubjectsProps) {
   const handleConfirmModal = () => {
     form
       .validateFields()
-      .then((values) => {
+      .then(async (values) => {
         let newDatasource = [...dataSource];
+        const messageNoti = isEditRecord ? 'Chỉnh sửa thông tin thành công' : 'Thêm mới môn học thành công';
         if (!isEditRecord) {
-          newDatasource = [values, ...dataSource];
+          const response = await createSubject(values);
+          if (response.success) {
+            newDatasource = [...dataSource, response.data];
+          }
+          else {
+            message.error('Không thể thêm mới môn học!')
+          }
         } else {
-          newDatasource[indexEdit] = { ...values };
+          const response = await updateSubject(values);
+          if (response.success) {
+            const indexEdit = newDatasource.findIndex((item) => item._id === values._id);
+            newDatasource[indexEdit] = { ...response.data };
+          } else {
+            message.error('Không thể chỉnh sửa thông tin môn học!');
+          }
         }
         setDataSource(newDatasource);
         setShowModal(false);
+        message.success(messageNoti);
         form.resetFields();
       })
       .catch((error) => {
+        console.log(error)
         message.error('Vui lòng điền đầy đủ thông tin');
       });
   };
@@ -97,14 +120,19 @@ function Subjects(props: SubjectsProps) {
   const handleEditSubject = (record: DataType, index: number) => {
     setShowModal(true);
     setIsEditRecord(true);
-    setIndexEdit(index);
     form.setFieldsValue(record);
   };
 
-  const handleDeleteSubject = (index: number): void => {
+  const handleDeleteSubject = async (id: string, index: number) => {
     setIsLoadingTable(true);
-    const newDatasource = dataSource.filter((item, idx) => idx !== index && item);
-    setDataSource(newDatasource);
+    const response = await deleteSubject(id);
+    if (response.success) {
+      const newDatasource = dataSource.filter((item, idx) => idx !== index && item);
+      setDataSource(newDatasource);
+    }
+    else {
+      message.error('Không thể xoá môn học này!')
+    }
     setIsLoadingTable(false);
   };
 

@@ -1,82 +1,79 @@
 import ModalTeacher from '@/components/ModalTeacher/ModalTeacher';
 import MainLayout from '@/layouts/MainLayout/MainLayout';
+import { RulesQualifications } from '@/models/teachersModel';
+import { createTeacher, deleteTeacher, getAllTeacher, updateTeacher } from '@/services/teacherService';
 import { DeleteOutlined, EditOutlined, UserAddOutlined } from '@ant-design/icons';
 import { Button, Form, Popconfirm, Row, Table, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import moment from 'moment';
-import { useState } from 'react';
-import { NumericFormat } from 'react-number-format';
+import { useEffect, useState } from 'react';
 
-interface ClassAndPeriods {
+interface ClassAndLession {
   class: string;
-  periods: number;
+  lession: number;
 }
 export interface DataTypeTeacher {
-  key: React.Key;
+  _id: string;
   teacherCode: string;
   name: string;
   address: string;
-  dateOfBirth: moment.Moment;
+  phoneNumber: string;
+  email: string;
+  dob: Date;
   cmnd: string;
   degree: string;
-  standardTeachingFee: number;
-  listClassAndPeriods: ClassAndPeriods[];
-}
-
-const data: DataTypeTeacher[] = [];
-for (let i = 0; i < 10; i++) {
-  data.push({
-    key: i,
-    teacherCode: 'A43465',
-    name: `Vũ Quang Kiên ${i}`,
-    address: `Hạ Long, Quảng Ninh ${i}`,
-    dateOfBirth: moment(),
-    cmnd: '0000',
-    degree: 'Tiến sĩ',
-    standardTeachingFee: 100000,
-    listClassAndPeriods: [
-      { class: 'A707', periods: 10 },
-      { class: 'B707', periods: 8 },
-      { class: 'A605', periods: 12 },
-    ],
-  });
+  listClassAndLession: ClassAndLession[];
 }
 
 function Home() {
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [dataSource, setDataSource] = useState<DataTypeTeacher[]>(data);
+  const [dataSource, setDataSource] = useState<DataTypeTeacher[]>([]);
   const [isEditTeacher, setIsEditTeacher] = useState<boolean>(false);
   const [isLoadingTable, setIsLoadingTable] = useState<boolean>(false);
-  const [indexEdit, setIndexEdit] = useState<number>(0);
   const [form] = Form.useForm();
 
+  useEffect(() => {
+    const getTeacher = async () => {
+      setIsLoadingTable(true);
+      const response = await getAllTeacher();
+      if (response.success && response.data.length > 0) {
+        setDataSource(response.data);
+      }
+      setIsLoadingTable(false);
+    };
+
+    getTeacher();
+  }, []);
+
   const columns: ColumnsType<DataTypeTeacher> = [
-    { title: 'Mã giáo viên', dataIndex: 'teacherCode', fixed: 'left' },
+    { title: 'Mã giáo viên', dataIndex: 'teacherCode', fixed: 'left', width: 150 },
     { title: 'Họ và tên', dataIndex: 'name', fixed: 'left' },
     { title: 'Địa chỉ', dataIndex: 'address' },
+    { title: 'Số điện thoại', dataIndex: 'phoneNumber', width: '150px' },
+    { title: 'Email', dataIndex: 'email', width: '220px' },
     {
       title: 'Ngày sinh',
-      dataIndex: 'dateOfBirth',
-      render: (date: moment.Moment) => moment(date).format('DD-MM-YYYY'),
+      dataIndex: 'dob',
+      render: (date: Date) => moment(date).format('DD-MM-YYYY'),
       width: '150px',
     },
     { title: 'CMND', dataIndex: 'cmnd', width: '150px' },
-    { title: 'Bằng cấp', dataIndex: 'degree', width: '150px' },
+    {
+      title: 'Bằng cấp',
+      dataIndex: 'degree',
+      width: '180px',
+      render: (type: keyof typeof RulesQualifications) => RulesQualifications[type],
+    },
     {
       title: 'Tên lớp - Số tiết',
       dataIndex: 'listClassAndPeriods',
       width: '300px',
-      render: (listClassAndPeriods: ClassAndPeriods[]) =>
-        listClassAndPeriods?.map(
-          (item, index) => `${item.class} - ${item.periods}${index !== listClassAndPeriods.length - 1 ? ',' : ''} `,
-        ),
-    },
-    {
-      title: 'Tiền dạy chuẩn(Theo giờ)',
-      dataIndex: 'standardTeachingFee',
-      render: (money: number) => (
-        <NumericFormat value={money} displayType={'text'} thousandSeparator={true} suffix={' đ'} />
-      ),
+      render: (listClassAndPeriods: ClassAndLession[]) =>
+        listClassAndPeriods
+          ? listClassAndPeriods.map(
+              (item, index) => `${item.class} - ${item.lession}${index !== listClassAndPeriods.length - 1 ? ',' : ''} `,
+            )
+          : 'Không có dữ liệu',
     },
     {
       title: 'Action',
@@ -97,7 +94,7 @@ function Home() {
               title="Bạn có muốn xoá giáo viên này không?"
               okText="Xoá giáo viên"
               cancelText="Không"
-              onConfirm={() => handleDeleteTeacher(index)}
+              onConfirm={() => handleDeleteTeacher(record._id, index)}
               okButtonProps={{ style: { boxShadow: 'none' } }}
             >
               <Button type="primary" icon={<DeleteOutlined />} danger />
@@ -111,14 +108,24 @@ function Home() {
   const handleConfirmModal = () => {
     form
       .validateFields()
-      .then((values) => {
+      .then(async (values) => {
         let newDatasource = [...dataSource];
         const messageNoti = isEditTeacher ? 'Chỉnh sửa thông tin thành công' : 'Thêm mới giáo viên thành công';
-        values = { ...values, teacherCode: 'A43271' };
         if (!isEditTeacher) {
-          newDatasource = [values, ...dataSource];
+          const response = await createTeacher(values);
+          if (response.success) {
+            newDatasource = [...dataSource, response.data];
+          } else {
+            message.error('Không thể thêm giáo viên!');
+          }
         } else {
-          newDatasource[indexEdit] = { ...values };
+          const response = await updateTeacher(values);
+          if (response.success) {
+            const indexEdit = newDatasource.findIndex((item) => item._id === values._id);
+            newDatasource[indexEdit] = { ...response.data };
+          } else {
+            message.error('Không thể chỉnh sửa giáo viên!');
+          }
         }
         setDataSource(newDatasource);
         setShowModal(false);
@@ -126,6 +133,7 @@ function Home() {
         form.resetFields();
       })
       .catch((error) => {
+        console.log(error)
         message.error('Vui lòng điền đầy đủ thông tin');
       });
   };
@@ -138,14 +146,20 @@ function Home() {
   const handleEditTeacher = (record: DataTypeTeacher, index: number) => {
     setShowModal(true);
     setIsEditTeacher(true);
-    setIndexEdit(index);
-    form.setFieldsValue(record);
+    const data = { ...record, dob: moment(record.dob) };
+    form.setFieldsValue(data);
   };
 
-  const handleDeleteTeacher = (index: number): void => {
+  const handleDeleteTeacher = async (id: string, index: number) => {
     setIsLoadingTable(true);
-    const newDatasource = dataSource.filter((item, idx) => idx !== index && item);
-    setDataSource(newDatasource);
+    const response = await deleteTeacher(id);
+    if (response.success) {
+      const newDatasource = dataSource.filter((item, idx) => idx !== index && item);
+      setDataSource(newDatasource);
+    }
+    else {
+      message.error('Không thể xoá giáo viên này!')
+    }
     setIsLoadingTable(false);
   };
 

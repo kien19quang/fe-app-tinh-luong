@@ -1,29 +1,40 @@
+import { SalaryDto } from '@/models/salaryModel';
+import { RulesQualifications } from '@/models/teachersModel';
 import { Descriptions, Modal, ModalProps } from 'antd';
+import moment from 'moment';
 import * as React from 'react';
 import { NumericFormat } from 'react-number-format';
 
-export interface ModalSalaryProps extends ModalProps {}
+export interface ModalSalaryProps extends ModalProps {
+  data: SalaryDto;
+}
 
-export default function ModalSalary({ ...props }: ModalSalaryProps) {
+export default function ModalSalary({ data, ...props }: ModalSalaryProps) {
   return (
     <Modal {...props}>
       <Descriptions style={{ marginTop: 24 }}>
-        <Descriptions.Item label="Họ và tên">Vũ Quang Kiên</Descriptions.Item>
-        <Descriptions.Item label="Số điện thoại">0847972859</Descriptions.Item>
-        <Descriptions.Item label="Email">kien19quang@gmail.com</Descriptions.Item>
-        <Descriptions.Item label="Địa chỉ">Hạ Long, Quảng Ninh</Descriptions.Item>
-        <Descriptions.Item label="Ngày sinh">08-06-2003</Descriptions.Item>
-        <Descriptions.Item label="Bằng cấp">Đã đỗ đại học</Descriptions.Item>
-        <Descriptions.Item label="Số giờ làm">140h</Descriptions.Item>
-        <Descriptions.Item label="Số tiết dạy" span={2}>60 tiết</Descriptions.Item>
-        <Descriptions.Item label="Các lớp đã dạy trong kì này" span={3}>
-          A707, A605, A402, A101
+        <Descriptions.Item label="Họ và tên">{data.nameTeacher}</Descriptions.Item>
+        <Descriptions.Item label="Số điện thoại">{data.phoneNumber}</Descriptions.Item>
+        <Descriptions.Item label="Email">{data.email}</Descriptions.Item>
+        <Descriptions.Item label="Địa chỉ">{data.address}</Descriptions.Item>
+        <Descriptions.Item label="Ngày sinh">{moment(data.dob).format('DD-MM-YYYY')}</Descriptions.Item>
+        <Descriptions.Item label="Bằng cấp">{RulesQualifications[data.degree]}</Descriptions.Item>
+        <Descriptions.Item label="Các lớp đã dạy trong kì - Số tiết" span={3}>
+          {data.classAndLession
+            ? data.classAndLession.map(
+                (item, index) =>
+                  `${item.class} - ${item.lession}${index !== data.classAndLession.length - 1 ? ',' : ''} `,
+              )
+            : 'Không có dữ liệu'}
         </Descriptions.Item>
         <Descriptions.Item label="Dạy môn" span={3}>
-          Lập trình hướng đối tượng, Ngôn ngữ lập trình, Hệ thống thông tin
+          {data.listSubject.join(', ')}
+        </Descriptions.Item>
+        <Descriptions.Item label="Tiền dạy chuẩn (Theo giờ)" span={1}>
+          <NumericFormat value={data.standardSalary} displayType={'text'} thousandSeparator={true} suffix={' đ'} />
         </Descriptions.Item>
         <Descriptions.Item label="Tiền lương">
-            <NumericFormat value={4000000} displayType={'text'} thousandSeparator={true} suffix={' đ'} />
+          <NumericFormat value={data.salary} displayType={'text'} thousandSeparator={true} suffix={' đ'} />
         </Descriptions.Item>
       </Descriptions>
     </Modal>

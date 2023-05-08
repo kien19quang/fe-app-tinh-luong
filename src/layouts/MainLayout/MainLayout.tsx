@@ -88,6 +88,10 @@ const MainLayout = ({ children }: LayoutProps): JSX.Element => {
     setTitleSelect(newTitleSelect);
   }, [currentPathname]);
 
+  const handleGoHomePage = () => {
+    router.push('/')
+  }
+
   return (
     <Layout hasSider style={{ backgroundColor: '#fff', minHeight: '100vh' }}>
       <Sider
@@ -115,6 +119,7 @@ const MainLayout = ({ children }: LayoutProps): JSX.Element => {
             cursor: 'pointer',
           }}
           align="middle"
+          onClick={handleGoHomePage}
         >
           <Image
             src={!siderCollapse ? LogoTLU : LogoTLUPreview}

@@ -9,6 +9,8 @@ export default function ModalSubject({ form, ...props }: ModalSubjectProps) {
   return (
     <Modal {...props}>
       <Form form={form} labelCol={{ span: 6 }} wrapperCol={{ span: 20 }} style={{ marginTop: 24 }}>
+        <Form.Item label="id" name="_id" hidden />
+
         <Form.Item label="Mã môn học" name="subjectCode" rules={[{ required: true, message: 'Vui lòng điền mã môn học!' }]}>
           <Input />
         </Form.Item>
@@ -25,9 +27,10 @@ export default function ModalSubject({ form, ...props }: ModalSubjectProps) {
           <Select
             allowClear
             options={[
-              { label: 'Dễ', value: 1 },
-              { label: 'Trung bình', value: 1.1 },
-              { label: 'Khó', value: 1.3 },
+              { label: 'Dễ', value: 'easy' },
+              { label: 'Bình thường', value: 'normal' },
+              { label: 'Khó', value: 'difficult' },
+              { label: 'Nâng cao', value: 'advanced' },
             ]}
           />
         </Form.Item>
