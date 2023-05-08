@@ -8,10 +8,6 @@ import type { ColumnsType } from 'antd/es/table';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 
-interface ClassAndLession {
-  class: string;
-  lession: number;
-}
 export interface DataTypeTeacher {
   _id: string;
   teacherCode: string;
@@ -22,7 +18,6 @@ export interface DataTypeTeacher {
   dob: Date;
   cmnd: string;
   degree: string;
-  listClassAndLession: ClassAndLession[];
 }
 
 function Home() {
@@ -63,17 +58,6 @@ function Home() {
       dataIndex: 'degree',
       width: '180px',
       render: (type: keyof typeof RulesQualifications) => RulesQualifications[type],
-    },
-    {
-      title: 'Tên lớp - Số tiết',
-      dataIndex: 'listClassAndPeriods',
-      width: '300px',
-      render: (listClassAndPeriods: ClassAndLession[]) =>
-        listClassAndPeriods
-          ? listClassAndPeriods.map(
-              (item, index) => `${item.class} - ${item.lession}${index !== listClassAndPeriods.length - 1 ? ',' : ''} `,
-            )
-          : 'Không có dữ liệu',
     },
     {
       title: 'Action',
