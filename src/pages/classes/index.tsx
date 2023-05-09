@@ -31,7 +31,7 @@ function Classes(props: ClassesProps) {
   React.useEffect(() => {
     const getClass = async () => {
       setIsLoadingTable(true);
-      const response = await getAllClass();
+      const response = await getAllClass() as any;
       if (response.success) {
         setDataSource(response.data);
       }
@@ -100,7 +100,7 @@ function Classes(props: ClassesProps) {
         let newDatasource = [...dataSource];
         const messageNoti = isEditRecord ? 'Chỉnh sửa thông tin thành công' : 'Thêm mới lớp học thành công';
         if (!isEditRecord) {
-          const response = await createClass(values);
+          const response = await createClass(values) as any;
           if (response.success) {
             newDatasource = [...dataSource, response.data];
           }
@@ -108,7 +108,7 @@ function Classes(props: ClassesProps) {
             message.error('Không thể tạo mới lớp học!')
           }
         } else {
-          const response = await updateClass(values)
+          const response = await updateClass(values) as any
           if (response.success) {
             const indexEdit = newDatasource.findIndex((item) => item._id === values._id);
             newDatasource[indexEdit] = { ...response.data };
@@ -146,7 +146,7 @@ function Classes(props: ClassesProps) {
 
   const handleDeleteClass = async (id: string, index: number): Promise<void> => {
     setIsLoadingTable(true);
-    const response = await deleteClass(id)
+    const response = await deleteClass(id) as any
     if (response.success) {
       const newDatasource = dataSource.filter((item, idx) => idx !== index && item);
       setDataSource(newDatasource);

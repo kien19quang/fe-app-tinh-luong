@@ -37,7 +37,7 @@ function StandardSalary(props: StandardSalaryProps) {
 
   React.useEffect(() => {
     const getStandardTeacherSalary = async () => {
-      const response = await getStandardSalary();
+      const response = await getStandardSalary() as any;
       if (response.success) {
         setDataSource([response.data]);
       }
@@ -51,7 +51,7 @@ function StandardSalary(props: StandardSalaryProps) {
       .validateFields()
       .then(async (values) => {
         console.log(values);
-        const response = await createStandardSalary(values.standardSalary);
+        const response = await createStandardSalary(values.standardSalary) as any;
         if (response.success) {
           setDataSource([response.data]);
           message.success('Thay đổi mức lương chuẩn theo giờ thành công');

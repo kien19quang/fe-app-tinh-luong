@@ -26,7 +26,7 @@ function Subjects(props: SubjectsProps) {
   React.useEffect(() => {
     const getSubject = async () => {
       setIsLoadingTable(true);
-      const response = await getAllSubject();
+      const response = await getAllSubject() as any;
       if (response.success) {
         setDataSource(response.data);
       }
@@ -80,7 +80,7 @@ function Subjects(props: SubjectsProps) {
         let newDatasource = [...dataSource];
         const messageNoti = isEditRecord ? 'Chỉnh sửa thông tin thành công' : 'Thêm mới môn học thành công';
         if (!isEditRecord) {
-          const response = await createSubject(values);
+          const response = await createSubject(values) as any;
           if (response.success) {
             newDatasource = [...dataSource, response.data];
           }
@@ -88,7 +88,7 @@ function Subjects(props: SubjectsProps) {
             message.error('Không thể thêm mới môn học!')
           }
         } else {
-          const response = await updateSubject(values);
+          const response = await updateSubject(values) as any;
           if (response.success) {
             const indexEdit = newDatasource.findIndex((item) => item._id === values._id);
             newDatasource[indexEdit] = { ...response.data };
@@ -125,7 +125,7 @@ function Subjects(props: SubjectsProps) {
 
   const handleDeleteSubject = async (id: string, index: number) => {
     setIsLoadingTable(true);
-    const response = await deleteSubject(id);
+    const response = await deleteSubject(id) as any;
     if (response.success) {
       const newDatasource = dataSource.filter((item, idx) => idx !== index && item);
       setDataSource(newDatasource);

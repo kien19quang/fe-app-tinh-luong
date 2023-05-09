@@ -1,42 +1,62 @@
 import axiosClient from '@/apiClient/axiosClient';
 import { SubjectDto } from '@/models/subjectModel';
 
-const getAllSubject = async () => {
-  const response = await axiosClient({
-    method: 'GET',
-    url: 'subject/get',
-  });
-
-  return response.data;
+const getAllSubject = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosClient({
+        method: 'GET',
+        url: 'subject/get',
+      });
+      resolve(response.data);
+    }catch(e) {
+      reject(e);
+    }
+  })
 };
 
-const createSubject = async (data: SubjectDto) => {
-  const response = await axiosClient({
-    method: 'POST',
-    url: 'subject/create',
-    data: data,
-  });
-
-  return response.data;
+const createSubject = (data: SubjectDto) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosClient({
+        method: 'POST',
+        url: 'subject/create',
+        data: data,
+      });
+      resolve(response.data);
+    }catch(e) {
+      reject(e);
+    }
+  })
 };
 
-const updateSubject = async (data: SubjectDto) => {
-  const response = await axiosClient({
-    method: 'PUT',
-    url: 'subject/update',
-    data: data,
-  });
-
-  return response.data;
+const updateSubject = (data: SubjectDto) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosClient({
+        method: 'PUT',
+        url: 'subject/update',
+        data: data,
+      });
+      resolve(response.data);
+    }catch(e) {
+      reject(e);
+    }
+  })
 };
 
-const deleteSubject = async (id: string) => {
-  const response = await axiosClient({
-    method: 'DELETE',
-    url: `subject/delete?id=${id}`,
-  });
-
-  return response.data;
+const deleteSubject = (id: string) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosClient({
+        method: 'DELETE',
+        url: `subject/delete?id=${id}`,
+      });
+      resolve(response.data);
+    }catch(e) {
+      reject(e);
+    }
+  })
 };
 
 export { getAllSubject, createSubject, updateSubject, deleteSubject };

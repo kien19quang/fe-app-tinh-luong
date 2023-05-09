@@ -1,42 +1,62 @@
 import axiosClient from '@/apiClient/axiosClient';
 import { TeacherDto } from '@/models/teachersModel';
 
-const getAllTeacher = async () => {
-  const response = await axiosClient({
-    method: 'GET',
-    url: 'teachers/get',
-  });
-
-  return response.data;
+const getAllTeacher = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosClient({
+        method: 'GET',
+        url: 'teachers/get',
+      });
+      resolve(response.data);
+    }catch(e) {
+      reject(e);
+    }
+  })
 };
 
-const createTeacher = async (data: TeacherDto) => {
-  const response = await axiosClient({
-    method: 'POST',
-    url: 'teachers/create',
-    data: data,
-  });
-
-  return response.data;
+const createTeacher = (data: TeacherDto) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosClient({
+        method: 'POST',
+        url: 'teachers/create',
+        data: data,
+      });
+      resolve(response.data);
+    }catch(e) {
+      reject(e);
+    }
+  })
 };
 
-const updateTeacher = async (data: TeacherDto) => {
-  const response = await axiosClient({
-    method: 'PUT',
-    url: 'teachers/update',
-    data: data,
-  });
-
-  return response.data;
+const updateTeacher = (data: TeacherDto) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosClient({
+        method: 'PUT',
+        url: 'teachers/update',
+        data: data,
+      });
+      resolve(response.data);
+    }catch(e) {
+      reject(e);
+    }
+  })
 };
 
-const deleteTeacher = async (id: string) => {
-  const response = await axiosClient({
-    method: 'DELETE',
-    url: `teachers/delete?id=${id}`,
-  });
-
-  return response.data;
+const deleteTeacher = (id: string) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosClient({
+        method: 'DELETE',
+        url: `teachers/delete?id=${id}`,
+      });
+      resolve(response.data);
+    }catch(e) {
+      reject(e);
+    }
+  })
 };
 
 export { getAllTeacher, createTeacher, updateTeacher, deleteTeacher };

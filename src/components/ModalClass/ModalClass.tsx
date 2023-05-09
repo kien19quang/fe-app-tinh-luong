@@ -20,7 +20,7 @@ export default function ModalClass({ form, ...props }: ModalClassProps) {
 
   React.useEffect(() => {
     const getTeacher = async () => {
-      const response = await getAllTeacher();
+      const response = await getAllTeacher() as any;
       if (response.success && response.data.length > 0) {
         const newListOptionTeacher: OptionType[] = response.data.map((item: TeacherDto) => ({
           value: item._id,
@@ -35,7 +35,7 @@ export default function ModalClass({ form, ...props }: ModalClassProps) {
 
   React.useEffect(() => {
     const getSubject = async () => {
-      const response = await getAllSubject();
+      const response = await getAllSubject() as any;
       if (response.success && response.data.length > 0) {
         const newListOptionSubject: OptionType[] = response.data.map((item: SubjectDto) => ({
           value: item._id,

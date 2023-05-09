@@ -33,7 +33,7 @@ function Salary(props: SalaryProps) {
 
   React.useEffect(() => {
     const getTeacherSalary = async () => {
-      const response = await getListTeacherSalary();
+      const response = await getListTeacherSalary() as any;
       if (response.success) {
         setDataSource(response.data);
       }

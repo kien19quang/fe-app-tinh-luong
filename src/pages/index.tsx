@@ -30,7 +30,7 @@ function Home() {
   useEffect(() => {
     const getTeacher = async () => {
       setIsLoadingTable(true);
-      const response = await getAllTeacher();
+      const response = await getAllTeacher() as any;
       if (response.success && response.data.length > 0) {
         setDataSource(response.data);
       }
@@ -96,14 +96,14 @@ function Home() {
         let newDatasource = [...dataSource];
         const messageNoti = isEditTeacher ? 'Chỉnh sửa thông tin thành công' : 'Thêm mới giáo viên thành công';
         if (!isEditTeacher) {
-          const response = await createTeacher(values);
+          const response = await createTeacher(values) as any;
           if (response.success) {
             newDatasource = [...dataSource, response.data];
           } else {
             message.error('Không thể thêm giáo viên!');
           }
         } else {
-          const response = await updateTeacher(values);
+          const response = await updateTeacher(values) as any;
           if (response.success) {
             const indexEdit = newDatasource.findIndex((item) => item._id === values._id);
             newDatasource[indexEdit] = { ...response.data };
@@ -136,7 +136,7 @@ function Home() {
 
   const handleDeleteTeacher = async (id: string, index: number) => {
     setIsLoadingTable(true);
-    const response = await deleteTeacher(id);
+    const response = await deleteTeacher(id) as any;
     if (response.success) {
       const newDatasource = dataSource.filter((item, idx) => idx !== index && item);
       setDataSource(newDatasource);
