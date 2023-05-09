@@ -34,7 +34,7 @@ function Subjects(props: SubjectsProps) {
     };
 
     getSubject();
-  });
+  }, []);
 
   const columns: ColumnsType<DataType> = [
     { title: 'Mã môn học', dataIndex: 'subjectCode' },
