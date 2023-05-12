@@ -7,10 +7,8 @@ export enum RulesLevelOfDifficultSubject {
 
 export interface SubjectDto {
   _id: string;
-  name: string,
-  address: string,
-  phoneNumber: string,
-  dob: Date,
-  cmnd: string,
-  degree: string
+  subjectCode: string;
+  name: string;
+  lession: number;
+  subjectCoefficients: number;
 }

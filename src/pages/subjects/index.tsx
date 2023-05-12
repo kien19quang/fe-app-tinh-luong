@@ -13,7 +13,8 @@ interface DataType {
   _id: string;
   subjectCode: string;
   name: string;
-  levelOfDifficult: number;
+  lession: number;
+  subjectCoefficients: number;
 }
 
 function Subjects(props: SubjectsProps) {
@@ -39,11 +40,8 @@ function Subjects(props: SubjectsProps) {
   const columns: ColumnsType<DataType> = [
     { title: 'Mã môn học', dataIndex: 'subjectCode' },
     { title: 'Tên môn học', dataIndex: 'name' },
-    {
-      title: 'Độ khó',
-      dataIndex: 'levelOfDifficult',
-      render: (type: keyof typeof RulesLevelOfDifficultSubject) => RulesLevelOfDifficultSubject[type],
-    },
+    { title: 'Sô tiết', dataIndex: 'lession' },
+    { title: 'Hệ số môn học', dataIndex: 'subjectCoefficients' },
     {
       title: 'Action',
       key: 'action',

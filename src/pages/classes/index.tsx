@@ -17,7 +17,6 @@ interface DataType {
   Teacher: TeacherDto;
   Subject: SubjectDto
   studentNumber: number;
-  lession: number;
 }
 
 
@@ -48,8 +47,7 @@ function Classes(props: ClassesProps) {
     },
     {
       title: 'Tên môn học',
-      dataIndex: 'Subject',
-      render: (subject: SubjectDto) => subject ? subject.name : ''
+      dataIndex: ['Subject', 'name'],
     },
     {
       title: "Giáo viên phụ trách",
@@ -58,7 +56,7 @@ function Classes(props: ClassesProps) {
     },
     {
       title: "Số tiết",
-      dataIndex: "lession"
+      dataIndex: ['Subject', 'lession'],
     },
     {
       title: 'Số lượng sinh viên',

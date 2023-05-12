@@ -72,11 +72,7 @@ export default function ModalClass({ form, ...props }: ModalClassProps) {
             options={listOptionTeacher}
           />
         </Form.Item>
-
-        <Form.Item label="Số tiết" name="lession" rules={[{ required: true, message: 'Vui lòng điền số tiết!' }]}>
-          <InputNumber style={{ width: '100%' }} />
-        </Form.Item>
-
+        
         <Form.Item
           label="Số lượng sinh viên"
           name="studentNumber"

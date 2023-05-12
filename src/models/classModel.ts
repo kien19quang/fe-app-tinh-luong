@@ -9,7 +9,7 @@ export interface ClassDto {
     _id: string;
     name: string;
     subjectCode: string;
+    lession: number;
   };
-  lession: number;
   studentNumber: number;
 }
