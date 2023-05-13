@@ -2,7 +2,7 @@ import { message } from 'antd';
 import axios from 'axios';
 
 const axiosClient = axios.create({
-  baseURL: 'http://localhost:8686/',
+  baseURL: 'https://103.69.193.30.nip.io/',
   headers: {
     'Content-Type': 'application/json',
   },
