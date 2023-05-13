@@ -114,7 +114,7 @@ function GeneralRules() {
             icon={<EditOutlined />}
             onClick={handleChangeStandardSalary}
           >
-            Thay đổi mức lương
+            Thay đổi quy định chung
           </Button>
         </Row>
 
@@ -125,7 +125,7 @@ function GeneralRules() {
         open={showModal}
         onCancel={handleCancelModal}
         onOk={handleConfirmModal}
-        title="Thay đổi lương chuẩn"
+        title="Thay đổi quy định chung"
         okButtonProps={{ htmlType: 'submit' }}
         cancelText="Huỷ"
         okText="Chỉnh sửa"
