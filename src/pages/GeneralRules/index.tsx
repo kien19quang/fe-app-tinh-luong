@@ -76,15 +76,14 @@ function GeneralRules() {
     form
       .validateFields()
       .then(async (values) => {
-        console.log(values);
         const response = (await createStandardSalary(values)) as any;
         if (response.success) {
           setDataSource([response.data]);
-          message.success('Thay đổi mức lương chuẩn theo giờ thành công');
+          message.success('Thay đổi quy định chung thành công');
           setShowModal(false);
           form.resetFields();
         } else {
-          message.error('Không thể thay đổi mức lương!');
+          message.error('Không thể thay đổi quy định chung!');
         }
       })
       .catch((e) => {
