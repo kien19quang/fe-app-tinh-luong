@@ -7,13 +7,26 @@ import moment from 'moment';
 import * as React from 'react';
 import { NumericFormat } from 'react-number-format';
 
-export interface StandardSalaryProps {}
 
 interface DataType {
   key: React.Key;
   standardSalary: number;
+  teacherCoefficient: {
+    graduate: number;
+    master: number;
+    docter: number;
+    associateProfessor: number;
+    professor: number;
+  };
   updatedAt: Date;
 }
+const listTeacherCoefficient: Array<{key: string, label: string}> = [
+  {key: 'graduate', label: 'Tốt nghiệp đại học'},
+  {key: 'master', label: 'Thạc sĩ'},
+  {key: 'docter', label: 'Tiến sĩ'},
+  {key: 'associateProfessor', label: 'Phó giáo sư'},
+  {key: 'professor', label: 'Giáo sư'},
+]
 
 const columns: ColumnsType<DataType> = [
   {
@@ -24,23 +37,36 @@ const columns: ColumnsType<DataType> = [
     ),
   },
   {
+    title: 'Hệ số giáo viên',
+    children: [
+      { title: 'Tốt nghiệp đại học', dataIndex: ['teacherCoefficient', 'graduate'] },
+      { title: 'Thạc sĩ', dataIndex: ['teacherCoefficient', 'master'] },
+      { title: 'Tiến sĩ', dataIndex: ['teacherCoefficient', 'docter'] },
+      { title: 'Phó giáo sư', dataIndex: ['teacherCoefficient', 'associateProfessor'] },
+      { title: 'Giáo sư', dataIndex: ['teacherCoefficient', 'professor'] },
+    ],
+  },
+  {
     title: 'Ngày thay đổi',
     dataIndex: 'updatedAt',
     render: (date: Date) => moment(date).format('DD-MM-YYYY'),
   },
 ];
 
-function StandardSalary(props: StandardSalaryProps) {
+function GeneralRules() {
   const [dataSource, setDataSource] = React.useState<DataType[]>([]);
   const [showModal, setShowModal] = React.useState<boolean>(false);
   const [isLoadingTable, setIsLoadingTable] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     const getStandardTeacherSalary = async () => {
-      const response = await getStandardSalary() as any;
+      setIsLoadingTable(true);
+      const response = (await getStandardSalary()) as any;
+      console.log(response)
       if (response.success) {
         setDataSource([response.data]);
       }
+      setIsLoadingTable(false)
     };
 
     getStandardTeacherSalary();
@@ -51,7 +77,7 @@ function StandardSalary(props: StandardSalaryProps) {
       .validateFields()
       .then(async (values) => {
         console.log(values);
-        const response = await createStandardSalary(values.standardSalary) as any;
+        const response = (await createStandardSalary(values)) as any;
         if (response.success) {
           setDataSource([response.data]);
           message.success('Thay đổi mức lương chuẩn theo giờ thành công');
@@ -73,7 +99,7 @@ function StandardSalary(props: StandardSalaryProps) {
   };
 
   const handleChangeStandardSalary = () => {
-    form.setFieldValue('standardSalary', dataSource[0]['standardSalary']);
+    form.setFieldsValue(dataSource[0])
     setShowModal(true);
   };
 
@@ -104,8 +130,9 @@ function StandardSalary(props: StandardSalaryProps) {
         okButtonProps={{ htmlType: 'submit' }}
         cancelText="Huỷ"
         okText="Chỉnh sửa"
+        width={600}
       >
-        <Form form={form} style={{ marginTop: 24 }}>
+        <Form form={form} style={{ marginTop: 24 }} labelCol={{ span: 7 }} wrapperCol={{ span: 20 }}>
           <Form.Item
             label="Tiền lương theo giờ"
             name="standardSalary"
@@ -113,12 +140,27 @@ function StandardSalary(props: StandardSalaryProps) {
           >
             <InputNumber style={{ width: '100%' }} />
           </Form.Item>
+
+          <Row style={{marginBottom: 18}}>Hệ số giáo viên:</Row>
+        
+          {listTeacherCoefficient.map((item, index) => {
+            return (
+              <Form.Item
+                key={item.key}
+                label={item.label}
+                name={["teacherCoefficient", `${item.key}`]}
+                rules={[{ required: true, message: `Vui lòng điền hệ số ${item.label.toLowerCase()}!` }]}
+              >
+                <InputNumber style={{ width: '100%' }} />
+              </Form.Item>
+            )
+          })}
         </Form>
       </Modal>
     </>
   );
 }
 
-StandardSalary.Layout = MainLayout;
+GeneralRules.Layout = MainLayout;
 
-export default StandardSalary;
+export default GeneralRules;

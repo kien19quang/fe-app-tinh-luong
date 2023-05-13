@@ -1,4 +1,5 @@
 import axiosClient from '@/apiClient/axiosClient';
+import { GeneralRulesDto } from '@/models/generalRules';
 
 const getListTeacherSalary = () => {
   return new Promise(async (resolve, reject) => {
@@ -28,13 +29,13 @@ const getStandardSalary = () => {
   })
 };
 
-const createStandardSalary = (salary: number) => {
+const createStandardSalary = (generalRules: GeneralRulesDto) => {
   return new Promise(async (resolve, reject) => {
     try {
       const response = await axiosClient({
         method: 'POST',
         url: 'salary/createStandardSalary',
-        data: { standardSalary: salary },
+        data: generalRules,
       });
       resolve(response.data);
     }catch(e) {
