@@ -28,15 +28,7 @@ export default function ModalSubject({ form, ...props }: ModalSubjectProps) {
           name="subjectCoefficients"
           rules={[{ required: true, message: 'Vui lòng chọn hệ số cho môn học!' }]}
         >
-          <Select
-            allowClear
-            options={[
-              { label: '1', value: 1 },
-              { label: '1.1', value: 1.1 },
-              { label: '1.2', value: 1.2 },
-              { label: '1.3', value: 1.3 },
-            ]}
-          />
+          <InputNumber style={{width: '100%'}} />
         </Form.Item>
       </Form>
     </Modal>
